@@ -1,0 +1,163 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #0f172a; /* Slate 900 */
+    color: #f8fafc;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    text-align: center;
+    max-width: 500px;
+    padding: 20px;
+}
+
+.container-app {
+    width: 90%;
+    max-width: 850px;
+    padding: 40px 20px;
+}
+
+h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    color: #38bdf8; /* Sky 400 */
+}
+
+hr {
+    border: 0;
+    height: 1px;
+    background: #334155;
+    margin-bottom: 30px;
+}
+
+.description {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-top: -5px;
+    margin-bottom: 15px;
+}
+
+/* Tarjetas */
+.card {
+    background: #1e293b; /* Slate 800 */
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 25px;
+    text-align: left;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.card h2 {
+    margin-top: 0;
+    font-size: 1.4rem;
+    color: #f1f5f9;
+}
+
+/* Inputs y Textareas */
+textarea, input[type="text"] {
+    width: 100%;
+    box-sizing: border-box;
+    background: #0f172a;
+    border: 1px solid #475569;
+    border-radius: 8px;
+    color: #f8fafc;
+    padding: 12px;
+    font-family: monospace;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+    resize: vertical;
+}
+
+textarea {
+    height: 80px;
+}
+
+/* Botones */
+button {
+    padding: 12px 24px;
+    border: none;
+    background: #2563eb; /* Blue 600 */
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+
+.btn-secondary {
+    background: #7c3aed; /* Violet 600 */
+}
+
+.btn-secondary:hover {
+    background: #6d28d9;
+}
+
+/* Bloques de Resultados */
+.result-box {
+    margin-top: 15px;
+    background: #0f172a;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #38bdf8;
+}
+
+.result-box textarea {
+    margin-top: 10px;
+    margin-bottom: 0;
+    background: #1e293b;
+    height: 70px;
+}
+
+.recovered-text {
+    font-family: monospace;
+    font-size: 1.1rem;
+    margin: 5px 0 0 0;
+    word-break: break-all;
+}
+
+/* Claves Flex para el generador */
+.key-flex {
+    display: flex;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.key-flex div {
+    flex: 1;
+}
+
+.key-flex label {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.key-flex textarea {
+    height: 120px;
+    font-size: 0.75rem;
+}
+
+/* Enlace de regreso */
+.back-link {
+    color: #38bdf8;
+    text-decoration: none;
+    font-weight: bold;
+    display: inline-block;
+    margin-bottom: 15px;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}

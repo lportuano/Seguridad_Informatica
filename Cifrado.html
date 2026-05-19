@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cifrado de Información</title>
+    <link rel="stylesheet" href="Style.css">
+</head>
+<body>
+
+    <div class="container-app">
+        <a href="Index.html" class="back-link">← Volver al Inicio</a>
+        <h1>🛠️ Módulo de Cifrado</h1>
+        <hr>
+
+        <div class="card">
+            <h2>🔑 Cifrado Simétrico (AES)</h2>
+            <p class="description">Usa una misma clave secreta para cifrar y descifrar.</p>
+            <textarea id="aes-plaintext" placeholder="Introduce el texto secreto aquí..."></textarea>
+            <input type="text" id="aes-key" placeholder="Clave secreta (Password)">
+            <button onclick="cifrarAES()">Cifrar con AES</button>
+            <div class="result-box">
+                <strong>Resultado Cifrado (Base64):</strong>
+                <textarea id="aes-ciphertext" readonly></textarea>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🏢 Cifrado Asimétrico (RSA)</h2>
+            <p class="description">Usa una Clave Pública compartida para cifrar el mensaje.</p>
+            <textarea id="rsa-plaintext" placeholder="Introduce el texto a enviar entre departamentos..."></textarea>
+            <textarea id="rsa-public-key" placeholder="Pega aquí la Clave Pública del destinatario..."></textarea>
+            <button onclick="cifrarRSA()" class="btn-secondary">Cifrar con RSA</button>
+            <div class="result-box">
+                <strong>Resultado Cifrado (RSA Blob):</strong>
+                <textarea id="rsa-ciphertext" readonly></textarea>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsencrypt/3.3.2/jsencrypt.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
