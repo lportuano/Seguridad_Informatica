@@ -13,46 +13,23 @@
         <h1>🔓 Módulo de Descifrado</h1>
         <hr>
 
-        <div class="card generator">
-            <h2>🎲 Generador de Llaves RSA (Requerido para probar RSA)</h2>
-            <button onclick="generarLlavesRSA()">Generar Par de Claves (1024 bits)</button>
-            <div class="key-flex">
-                <div>
-                    <label>Clave Pública (Compártela para que te cifren):</label>
-                    <textarea id="generated-public" readonly></textarea>
-                </div>
-                <div>
-                    <label>Clave Privada (Guárdala para descifrar):</label>
-                    <textarea id="generated-private" readonly></textarea>
-                </div>
-            </div>
-        </div>
-
         <div class="card">
-            <h2>🔑 Descifrado Simétrico (AES)</h2>
-            <textarea id="aes-ciphertext-input" placeholder="Pega el texto cifrado en AES..."></textarea>
+            <h2>🔓 Descifrar Archivo (AES)</h2>
+            <p class="description">Sube tu archivo .enc y pon la clave correcta para restaurarlo.</p>
+            
+            <div style="text-align: center; margin-bottom: 20px;">
+                <button type="button" class="btn-select" onclick="document.getElementById('file-to-decrypt').click()">
+                    📁 Seleccionar Archivo Cifrado (.enc)...
+                </button>
+                <input type="file" id="file-to-decrypt" style="display: none;" onchange="actualizarNombreDescifrar()">
+                <p id="file-name-decrypt" class="file-status">Ningún archivo seleccionado</p>
+            </div>
+
             <input type="text" id="aes-key-input" placeholder="Introduce la misma clave secreta">
-            <button onclick="descifrarAES()">Descifrar AES</button>
-            <div class="result-box">
-                <strong>Texto Original:</strong>
-                <p id="aes-recovered" class="recovered-text">...</p>
-            </div>
-        </div>
-
-        <div class="card">
-            <h2>🏢 Descifrado Asimétrico (RSA)</h2>
-            <textarea id="rsa-ciphertext-input" placeholder="Pega el texto cifrado en RSA..."></textarea>
-            <textarea id="rsa-private-key" placeholder="Pega tu Clave Privada aquí..."></textarea>
-            <button onclick="descifrarRSA()" class="btn-secondary">Descifrar RSA</button>
-            <div class="result-box">
-                <strong>Texto Original:</strong>
-                <p id="rsa-recovered" class="recovered-text">...</p>
-            </div>
+            <button onclick="descifrarArchivoAES()">Descifrar y Restaurar Archivo</button>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsencrypt/3.3.2/jsencrypt.min.js"></script>
-    <script src="script.js"></script>
+    <script src="Scrip.js"></script>
 </body>
 </html>

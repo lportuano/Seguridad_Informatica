@@ -1,100 +1,212 @@
-// ==========================================
-// 🔑 1. LÓGICA DE CIFRADO / DESCIFRADO AES (Simétrico)
-// ==========================================
-
-function cifrarAES() {
-    const texto = document.getElementById('aes-plaintext').value;
-    const clave = document.getElementById('aes-key').value;
-
-    if (!texto || !clave) {
-        alert("Por favor, rellena el texto y la clave secreta.");
-        return;
+// Mostrar nombres de archivos en la interfaz
+function actualizarNombreCifrar() {
+    const fileInput = document.getElementById('file-to-encrypt');
+    const status = document.getElementById('file-name-encrypt');
+    if(fileInput.files.length > 0) {
+        status.innerText = "📄 Listo para cifrar: " + fileInput.files[0].name;
+        status.style.color = "#38bdf8";
     }
-
-    // Cifrado usando CryptoJS
-    const cifrado = CryptoJS.AES.encrypt(texto, clave).toString();
-    document.getElementById('aes-ciphertext').value = cifrado;
 }
 
-function descifrarAES() {
-    const cifrado = document.getElementById('aes-ciphertext-input').value;
-    const clave = document.getElementById('aes-key-input').value;
+function actualizarNombreDescifrar() {
+    const fileInput = document.getElementById('file-to-decrypt');
+    const status = document.getElementById('file-name-decrypt');
+    if(fileInput.files.length > 0) {
+        status.innerText = "📄 Listo para descifrar: " + fileInput.files[0].name;
+        status.style.color = "#a78bfa";
+    }
+}
 
-    if (!cifrado || !clave) {
-        alert("Por favor, introduce el texto cifrado y la clave.");
+// Helper para convertir string a Hash (clave AES)
+async function generarClaveAES(password) {
+    const enc = new TextEncoder();
+    const keyMaterial = await window.crypto.subtle.importKey(
+        "raw", enc.encode(password), { name: "PBKDF2" }, false, ["deriveKey"]
+    );
+    return window.crypto.subtle.deriveKey(
+        {
+            name: "PBKDF2",
+            salt: enc.encode("ItsqmetSaltSecura2026"),
+            iterations: 100000,
+            hash: "SHA-256"
+        },
+        keyMaterial,
+        { name: "AES-GCM", length: 256 },
+        false,
+        ["encrypt", "decrypt"]
+    );
+}
+
+// ==========================================
+// 🔒 1. CIFRAR ARCHIVO (AES-GCM Nativo)
+// ==========================================
+async function cifrarArchivoAES() {
+    const fileInput = document.getElementById('file-to-encrypt');
+    const password = document.getElementById('aes-key').value;
+
+    if (fileInput.files.length === 0 || !password) {
+        alert("⚠️ Por favor, selecciona un archivo e introduce una clave.");
         return;
     }
 
     try {
-        // Descifrado usando CryptoJS
-        const bytes = CryptoJS.AES.decrypt(cifrado, clave);
-        const originalText = bytes.toString(CryptoJS.enc.Utf8);
-
-        if (!originalText) throw new Error();
+        const file = fileInput.files[0];
+        const archivoBuffer = await file.arrayBuffer();
         
-        document.getElementById('aes-recovered').innerText = originalText;
-        document.getElementById('aes-recovered').style.color = "#10b981"; // Verde éxito
+        // Generar clave e Vector de Inicialización (IV)
+        const claveCrypto = await generarClaveAES(password);
+        const iv = window.crypto.getRandomValues(new Uint8Array(12)); // 12 bytes para GCM
+
+        // Cifrar datos binarios puros
+        const datosCifradosBuffer = await window.crypto.subtle.encrypt(
+            { name: "AES-GCM", iv: iv },
+            claveCrypto,
+            archivoBuffer
+        );
+
+        // Estructurar el archivo de salida: 12 bytes del IV + Datos Cifrados
+        const resultadoFinal = new Blob([iv, datosCifradosBuffer], { type: "application/octet-stream" });
+        
+        // Descarga Forzada Nativa
+        const url = URL.createObjectURL(resultadoFinal);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = file.name + ".enc";
+        document.body.appendChild(a);
+        a.click();
+        
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        alert("🎉 ¡Cifrado exitoso! Archivo descargado.");
+
     } catch (error) {
-        document.getElementById('aes-recovered').innerText = "❌ Error: Clave incorrecta o datos corruptos.";
-        document.getElementById('aes-recovered').style.color = "#ef4444"; // Rojo error
+        alert("Error en el cifrado: " + error.message);
     }
 }
-
 
 // ==========================================
-// 🏢 2. LÓGICA DE CIFRADO / DESCIFRADO RSA (Asimétrico)
+// 🔓 2. DESCIFRAR ARCHIVO (AES-GCM Nativo)
 // ==========================================
+async function descifrarArchivoAES() {
+    const fileInput = document.getElementById('file-to-decrypt');
+    const password = document.getElementById('aes-key-input').value;
 
-// Función auxiliar para el paso previo en Decifrado.html
-function generarLlavesRSA() {
-    const crypt = new JSEncrypt({ default_key_size: 1024 });
-    crypt.getKey();
-    
-    document.getElementById('generated-public').value = crypt.getPublicKey();
-    document.getElementById('generated-private').value = crypt.getPrivateKey();
+    if (fileInput.files.length === 0 || !password) {
+        alert("⚠️ Selecciona el archivo .enc e ingresa la contraseña.");
+        return;
+    }
+
+    try {
+        const file = fileInput.files[0];
+        const bufferCompleto = await file.arrayBuffer();
+
+        // Extraer los componentes: los primeros 12 bytes son el IV, el resto son los datos cifrados
+        const iv = bufferCompleto.slice(0, 12);
+        const datosCifrados = bufferCompleto.slice(12);
+
+        const claveCrypto = await generarClaveAES(password);
+
+        // Descifrar de forma nativa
+        const datosDescifradosBuffer = await window.crypto.subtle.decrypt(
+            { name: "AES-GCM", iv: new Uint8Array(iv) },
+            claveCrypto,
+            datosCifrados
+        );
+
+        // Descargar el archivo restaurado
+        const archivoRestaurado = new Blob([datosDescifradosBuffer], { type: "application/octet-stream" });
+        let nombreOriginal = file.name.replace(".enc", "");
+
+        const url = URL.createObjectURL(archivoRestaurado);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = nombreOriginal;
+        document.body.appendChild(a);
+        a.click();
+
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        alert("🔓 ¡Archivo descifrado correctamente!");
+
+    } catch (error) {
+        alert("❌ Error: Contraseña incorrecta o archivo dañado.");
+    }
 }
 
-function cifrarRSA() {
-    const texto = document.getElementById('rsa-plaintext').value;
-    const publicKey = document.getElementById('rsa-public-key').value;
+// ==========================================
+// 🏢 3. GENERAR Y DESCARGAR LLAVES RSA EN FORMATO OPENPGP PERSONALIZADO
+// ==========================================
+async function generarYDescargarLlavesRSA() {
+    // Capturamos los dos valores ingresados por el usuario
+    const alias = document.getElementById('rsa-alias').value.trim();
+    const email = document.getElementById('rsa-email').value.trim();
 
-    if (!texto || !publicKey) {
-        alert("Se requiere el texto y la clave pública del destinatario.");
+    // Validamos que ninguno de los dos campos esté vacío
+    if (!alias || !email) {
+        alert("⚠️ Por favor, completa tanto el Nombre/Alias como el Correo Electrónico para generar tus llaves.");
         return;
     }
 
-    const encryptor = new JSEncrypt();
-    encryptor.setPublicKey(publicKey);
-    
-    const cifrado = encryptor.encrypt(texto);
-    
-    if (!cifrado) {
-        alert("Error: Asegúrate de que el formato de la clave pública sea válido.");
-        return;
-    }
-    
-    document.getElementById('rsa-ciphertext').value = cifrado;
-}
-
-function descifrarRSA() {
-    const cifrado = document.getElementById('rsa-ciphertext-input').value;
-    const privateKey = document.getElementById('rsa-private-key').value;
-
-    if (!cifrado || !privateKey) {
-        alert("Se requiere el texto cifrado y tu clave privada.");
+    // Validación básica de formato de correo
+    if (!email.includes("@") || !email.includes(".")) {
+        alert("⚠️ Por favor, ingresa un formato de correo electrónico válido (ejemplo@dominio.com).");
         return;
     }
 
-    const decryptor = new JSEncrypt();
-    decryptor.setPrivateKey(privateKey);
-    
-    const originalText = decryptor.decrypt(cifrado);
+    try {
+        // Carga dinámica de la librería OpenPGP si no se encuentra en el entorno
+        if (typeof openpgp === 'undefined') {
+            alert("🔄 Conectando módulos criptográficos PGP... Dale 'Aceptar' para inicializar.");
+            await new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = "https://unpkg.com/openpgp@5.11.0/dist/openpgp.min.js";
+                script.onload = () => resolve();
+                script.onerror = () => reject(new Error("No se pudo cargar el motor OpenPGP de internet."));
+                document.head.appendChild(script);
+            });
+        }
 
-    if (originalText) {
-        document.getElementById('rsa-recovered').innerText = originalText;
-        document.getElementById('rsa-recovered').style.color = "#10b981";
-    } else {
-        document.getElementById('rsa-recovered').innerText = "❌ Error: La clave privada no corresponde o el texto está alterado.";
-        document.getElementById('rsa-recovered').style.color = "#ef4444";
+        alert(`⏳ Generando par de llaves OpenPGP para:\n👤 Usuario: ${alias}\n📧 Correo: ${email}\n\nEsto puede tomar entre 3 y 5 segundos. Presiona Aceptar.`);
+
+        // Generar el bloque OpenPGP usando los datos reales ingresados por ti
+        const { privateKey, publicKey } = await openpgp.generateKey({
+            userIDs: [{ name: alias, email: email }], // Mapeo directo y real de tus inputs
+            type: 'rsa',
+            rsaBits: 2048,
+            format: 'armored'
+        });
+
+        // Limpiar el nombre para evitar espacios raros en el nombre del archivo descargado
+        const nombreArchivo = alias.replace(/\s+/g, '_');
+
+        // --- DISPARAR DESCARGA CLAVE PÚBLICA (.asc) ---
+        const blobPub = new Blob([publicKey], { type: "text/plain;charset=utf-8" });
+        const urlPub = URL.createObjectURL(blobPub);
+        const linkPub = document.createElement('a');
+        linkPub.href = urlPub;
+        linkPub.download = `Clave_Publica_${nombreArchivo}.asc`; 
+        document.body.appendChild(linkPub);
+        linkPub.click();
+        document.body.removeChild(linkPub);
+        URL.revokeObjectURL(urlPub);
+
+        // --- DISPARAR DESCARGA CLAVE PRIVADA (.asc) ---
+        setTimeout(() => {
+            const blobPriv = new Blob([privateKey], { type: "text/plain;charset=utf-8" });
+            const urlPriv = URL.createObjectURL(blobPriv);
+            const linkPriv = document.createElement('a');
+            linkPriv.href = urlPriv;
+            linkPriv.download = `Clave_Privada_${nombreArchivo}_SECRETA.asc`; 
+            document.body.appendChild(linkPriv);
+            linkPriv.click();
+            document.body.removeChild(linkPriv);
+            URL.revokeObjectURL(urlPriv);
+            
+            alert(`🎉 ¡Llaves OpenPGP creadas con éxito con tus datos!\n\nYa puedes arrastrar el archivo "Clave_Publica_${nombreArchivo}.asc" dentro de Kleopatra.`);
+        }, 600);
+
+    } catch (error) {
+        alert("Error al procesar llaves OpenPGP: " + error.message);
+        console.error(error);
     }
 }

@@ -3,23 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seguridad Informática</title>
+    <title>Sistema de Seguridad - Inicio</title>
     <link rel="stylesheet" href="Style.css">
 </head>
 <body>
 
-    <div class="container">
-        <h1>🔐 Sistema de Seguridad</h1>
-        <p>Implementación de Cifrado Simétrico (AES) y Asimétrico (RSA)</p>
-
-        <div class="menu-buttons">
-            <a href="Cifrado.html">
-                <button class="btn">Ir a Cifrar</button>
-            </a>
-            <a href="Decifrado.html">
-                <button class="btn btn-secondary">Ir a Descifrar</button>
-            </a>
+    <div class="container-app">
+        <div class="main-header-neon">
+            <h1>🔒 Sistema de Seguridad</h1>
+            <p class="subtitle-neon">Implementación de Cifrado Simétrico y Asimétrico</p>
         </div>
+        
+        <hr>
+
+        <div class="menu-grid">
+            
+            <a href="Cifrado.html" class="menu-box neon-cyan">
+                <div class="box-icon">🛠️</div>
+                <h3>Ir a Cifrar</h3>
+                <p>Módulo para codificación simétrica AES de archivos y generación asimétrica de llaves OpenPGP.</p>
+                <span class="action-tag">Acceder Módulo →</span>
+            </a>
+
+            <a href="Decifrado.html" class="menu-box neon-magenta">
+                <div class="box-icon">🔓</div>
+                <h3>Ir a Descifrar</h3>
+                <p>Módulo para restaurar archivos .enc protegidos de vuelta a su formato original mediante clave simétrica.</p>
+                <span class="action-tag">Acceder Módulo →</span>
+            </a>
+
+        </div>
+
+        <footer class="footer-credits">
+            <p>Desarrollado por: Roy Armijos</p>
+        </footer>
     </div>
 
 </body>

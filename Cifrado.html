@@ -1,45 +1,51 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cifrado de Información</title>
     <link rel="stylesheet" href="Style.css">
 </head>
+
 <body>
 
     <div class="container-app">
         <a href="Index.html" class="back-link">← Volver al Inicio</a>
-        <h1>🛠️ Módulo de Cifrado</h1>
+        <h1>🛠️ Módulo de Seguridad y Cifrado</h1>
         <hr>
 
         <div class="card">
-            <h2>🔑 Cifrado Simétrico (AES)</h2>
-            <p class="description">Usa una misma clave secreta para cifrar y descifrar.</p>
-            <textarea id="aes-plaintext" placeholder="Introduce el texto secreto aquí..."></textarea>
-            <input type="text" id="aes-key" placeholder="Clave secreta (Password)">
-            <button onclick="cifrarAES()">Cifrar con AES</button>
-            <div class="result-box">
-                <strong>Resultado Cifrado (Base64):</strong>
-                <textarea id="aes-ciphertext" readonly></textarea>
+            <h2>🔑 1. Cifrado Simétrico (AES de Archivos)</h2>
+            <p class="description">Sube cualquier archivo (imagen, video, música) y protégelo con una contraseña.</p>
+
+            <div style="text-align: center; margin-bottom: 20px;">
+                <button type="button" class="btn-select" onclick="document.getElementById('file-to-encrypt').click()">
+                    📁 Seleccionar Archivo...
+                </button>
+                <input type="file" id="file-to-encrypt" style="display: none;" onchange="actualizarNombreCifrar()">
+                <p id="file-name-encrypt" class="file-status">Ningún archivo seleccionado</p>
             </div>
+
+            <input type="text" id="aes-key" placeholder="Introduce la clave secreta para el archivo">
+            <button onclick="cifrarArchivoAES()">Cifrar y Descargar Archivo .enc</button>
         </div>
 
         <div class="card">
-            <h2>🏢 Cifrado Asimétrico (RSA)</h2>
-            <p class="description">Usa una Clave Pública compartida para cifrar el mensaje.</p>
-            <textarea id="rsa-plaintext" placeholder="Introduce el texto a enviar entre departamentos..."></textarea>
-            <textarea id="rsa-public-key" placeholder="Pega aquí la Clave Pública del destinatario..."></textarea>
-            <button onclick="cifrarRSA()" class="btn-secondary">Cifrar con RSA</button>
-            <div class="result-box">
-                <strong>Resultado Cifrado (RSA Blob):</strong>
-                <textarea id="rsa-ciphertext" readonly></textarea>
-            </div>
+            <h2>🏢 2. Cifrado Asimétrico (Generador de Claves RSA)</h2>
+            <p class="description">Introduce tu nombre de usuario y tu correo electrónico para empaquetar tus llaves de
+                seguridad de forma personalizada.</p>
+
+            <input type="text" id="rsa-alias" placeholder="Ej: Roy Armijos o Departamento_Sistemas">
+
+            <input type="text" id="rsa-email" placeholder="Ej: tu_correo@ejemplo.com">
+
+            <button onclick="generarYDescargarLlavesRSA()" class="btn-secondary">Generar y Descargar Par de
+                Claves</button>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsencrypt/3.3.2/jsencrypt.min.js"></script>
-    <script src="script.js"></script>
+    <script src="Scrip.js"></script>
 </body>
+
 </html>
